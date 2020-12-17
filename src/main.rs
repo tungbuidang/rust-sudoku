@@ -1,6 +1,9 @@
+
 extern crate rand;
+use rand :: Rng;
 use rand ::thread_rng;
 use rand :: seq :: SliceRandom;
+
 
 // struct SudokuNum {
 //     value: i8,
@@ -8,13 +11,19 @@ use rand :: seq :: SliceRandom;
 // }
 
 #[derive(Copy, Clone)]
-struct Coordinate {
+pub struct Coordinate {
     x: usize,
     y: usize
 }
 
-struct Sudoku3x3 {
+pub struct CellProperties {
+    val: u8,
+    coordinate: Coordinate
+}
+
+pub struct Sudoku3x3 {
     matrix: [[u8;9];9],
+    copy_matrix: [[u8;9];9],
     hint: u8,
 }
 
@@ -94,56 +103,80 @@ impl Sudoku3x3 {
         }
         None
     }
-
-    fn generate_full_board(&mut self) -> bool {
-        for row in 0..self.matrix.len() {
-            for col in 0..self.matrix.len() {
-            if self.matrix[row][col] == 0 {
-                let list = rng_sudoku();
-                for num in list {
-                    let num_coordinate = Coordinate{x: col, y: row};
-                    if self.valid_num(num, num_coordinate){
-                        self.set_num(num, num_coordinate);
-                        let not_finished : Option<Coordinate> = self.find_empty_square();
-                        match  not_finished {
-                            None => return true,
-                            Some(coordinate) => if self.generate_full_board() {
-                                return true
-                            }
+    // use backtracking recursion algorithm, find the first possible sudoku board 
+    pub fn generate_full_board(&mut self) -> bool {
+        let zeroes = self.find_empty_square();
+        match zeroes {
+            None => return true,
+            Some(coordinate) => {
+                let numlist = rng_sudoku();
+                for num in numlist {
+                    if self.valid_num(num, coordinate) {
+                        self.set_num(num, coordinate);
+                        let done = self.generate_full_board();
+                        if done {
+                            return true
                         }
-                    }
-                break
-                }
-            }
-        }
-    }   
-    return false    
-    }
-    
-    fn generate_full_board_v2(&mut self) -> bool {
-        for row in 0..self.matrix.len() {
-            for col in 0.. self.matrix.len(){
-                let zeroes : Option<Coordinate> = self.find_empty_square();
-                match zeroes {
-                    None => return true,
-                    Some(coordinate) => {
-                        let list = rng_sudoku();
-                        if self.matrix[row][col] == 0 {
-                            for num in list {
-                                let num_coordinate = Coordinate{x: col, y: row};
-                                if self.valid_num(num, num_coordinate) {
-                                    self.set_num(num, num_coordinate)
-                                }
-                            }
-                        }
-                        self.matrix[row][col] = 0;
+                        self.set_num(0, coordinate);
                     }
                 }
             }
-        }
+        }  
         return false
     }
-    
+
+    fn remove_random_num(&mut self) -> Option<CellProperties> {
+        let mut rng = rand::thread_rng();
+        let row: usize = rng.gen_range(0,9);
+        let col: usize = rng.gen_range(0,9);
+        let num: u8 = self.matrix[row][col];
+        let coordinate = Coordinate{x: col, y: row};
+        if self.matrix[row][col] != 0 {
+            self.set_num(0, coordinate);
+            let  removed_cell = CellProperties {val: num, coordinate: coordinate};
+            return Some(removed_cell)
+        }
+    return None
+    }
+
+    pub fn remove_some_num(&mut self, zero_count: u8) -> bool {
+        let mut count = 0;
+        let mut removed_success : Vec<CellProperties> = Vec::new();
+        while count < zero_count {
+            let m = self.remove_random_num();
+            match m {
+                None => (),
+                Some(m) => { 
+                    removed_success.push(m);
+                    count += 1;
+                }
+            }
+            if self.solution_count() > 1 {
+                let last_cell_modified = removed_success.pop();
+
+            }
+        }
+        return true
+    }
+    pub fn solution_count(&mut self) -> i32 {
+        let mut count: i32 = 0;
+        let zeroes = self.find_empty_square();
+        match zeroes {
+            None => return 1,
+            Some(coordinate) => {
+                let numlist: Vec<u8> = (1..10).collect();
+                for num in numlist.iter() {
+                    if self.valid_num(*num, coordinate) {
+                        self.set_num(*num, coordinate);
+                        let done = self.solution_count();
+                        count += done;
+                        self.set_num(0, coordinate)
+                    }
+                }
+            }
+        }
+        return count;
+    }
 }
 
 fn rng_sudoku() -> Vec<u8> {
@@ -156,9 +189,15 @@ fn main() {
 
     let mut my_sudoku = Sudoku3x3 {
         matrix: [[0;9];9],
+        copy_matrix: [[0;9];9],
         hint: 3
     };
-    my_sudoku.generate_full_board_v2();
+    my_sudoku.generate_full_board();
     my_sudoku.print_sudoku();
-
+    // println!("\n\n\n");
+    my_sudoku.remove_some_num(40);
+    let mut your_sudoku = my_sudoku;
+    let y = your_sudoku .solution_count();
+    println!("{}", y);
+    // my_sudoku.print_sudoku();
 }
