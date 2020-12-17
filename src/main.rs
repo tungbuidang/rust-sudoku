@@ -153,7 +153,15 @@ impl Sudoku3x3 {
             }
             if self.solution_count() > 1 {
                 let last_cell_modified = removed_success.pop();
-
+                match last_cell_modified {
+                    None => (),
+                    Some (last_cell_modified) => {
+                        self.set_num(last_cell_modified.val, last_cell_modified.coordinate);
+                        println!("number of 0 added is: {}", removed_success.len());
+                        return true
+                    }
+                }
+                    
             }
         }
         return true
@@ -195,9 +203,9 @@ fn main() {
     my_sudoku.generate_full_board();
     my_sudoku.print_sudoku();
     // println!("\n\n\n");
-    my_sudoku.remove_some_num(40);
-    let mut your_sudoku = my_sudoku;
-    let y = your_sudoku .solution_count();
-    println!("{}", y);
-    // my_sudoku.print_sudoku();
+    my_sudoku.remove_some_num(50);
+    // let mut your_sudoku = my_sudoku;
+    // let y = your_sudoku .solution_count();
+    // println!("{}", y);
+    my_sudoku.print_sudoku();
 }
