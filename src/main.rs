@@ -1,11 +1,13 @@
 mod lib;
 use std::io;
 use std::thread;
-
+use std::time;
 
 fn main() {
+    let wait_short = time::Duration::from_millis(800);
+    let wait_long = time::Duration::from_millis(1300);
     println!("Generating sudoku....");
-    thread::sleep_ms(1250);
+    thread::sleep(wait_long);
     let mut my_sudoku = lib::Sudoku3x3 {
         matrix: [[0;9];9],
         solved_matrix: [[0;9];9],
@@ -31,18 +33,18 @@ fn main() {
         println!("you choose: {} \n", choice);
         match choice {
             1 =>    { my_sudoku.ask_for_hint();
-                    thread::sleep_ms(1500);
+                    thread::sleep(wait_long);
                     my_sudoku.print_sudoku();
-                    thread::sleep_ms(500);
+                    thread::sleep(wait_short);
                 }
             2 =>    { println!("Getting completed solution...");
-                    thread::sleep_ms(1500);
+                    thread::sleep(wait_long);
                     my_sudoku.print_completed_sudoku();
-                    thread::sleep_ms(800);
+                    thread::sleep(wait_short);
                     println!("Game over!");
-                    thread::sleep_ms(800); 
+                    thread::sleep(wait_short); 
                     println!("Thanks for playing");
-                    thread::sleep_ms(800);
+                    thread::sleep(wait_short);
                     break
                 }
             _ => println!("only 1 and 2 can be chosen"),

@@ -4,6 +4,7 @@ use rand ::thread_rng;
 use rand :: seq :: SliceRandom;
 use std :: io;
 use std::thread;
+use std:: time;
 
 #[derive(Copy, Clone)]
 pub struct Coordinate {
@@ -253,7 +254,7 @@ impl Sudoku3x3 {
             let action = self.use_hint(read_coor);
             match action {
                 None => {println!("this is not a blank position");
-                        thread::sleep_ms(1500);
+                        thread::sleep(time::Duration::from_millis(1300));
                         self.print_sudoku();
                     }
                 Some(x) => {
