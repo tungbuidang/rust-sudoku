@@ -6,5 +6,7 @@ To generate puzzle, numbers are removed from a full solution one by one, at each
 Currently user has only 2 options: Ask for a hint or getting the completed solution. Further improvement will be required of there's interest: 
 
 4x4, 16x16 Sudoku
-user interface to change number at blank location 
+
+User interface to change number at blank location 
+
 Point system 
