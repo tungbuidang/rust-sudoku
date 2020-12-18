@@ -1,14 +1,9 @@
-
 extern crate rand;
 use rand :: Rng;
 use rand ::thread_rng;
 use rand :: seq :: SliceRandom;
 use std :: io;
-
-// struct SudokuNum {
-//     value: i8,
-//     display: bool
-// }
+use std::thread;
 
 #[derive(Copy, Clone)]
 pub struct Coordinate {
@@ -258,6 +253,7 @@ impl Sudoku3x3 {
             let action = self.use_hint(read_coor);
             match action {
                 None => {println!("this is not a blank position");
+                        thread::sleep_ms(1500);
                         self.print_sudoku();
                     }
                 Some(x) => {
