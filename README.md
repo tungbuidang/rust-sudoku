@@ -10,3 +10,6 @@ Currently user has only 2 options: Ask for a hint or getting the completed solut
 User interface to change number at blank location 
 
 Point system 
+
+
+To start the game, simply use command "cargo run" from inside the cargo in terminal. use "ctrl + c" to exit
